@@ -1,23 +1,50 @@
 package com.tenniscourts.reservations;
 
+import com.tenniscourts.config.persistence.BaseEntity;
 import com.tenniscourts.exceptions.EntityNotFoundException;
+import com.tenniscourts.guests.Guest;
+import com.tenniscourts.guests.GuestDTO;
+import com.tenniscourts.guests.GuestService;
+import com.tenniscourts.schedules.Schedule;
+import com.tenniscourts.schedules.ScheduleDTO;
+import com.tenniscourts.schedules.ScheduleService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static com.tenniscourts.reservations.ReservationStatus.READY_TO_PLAY;
 
 @Service
 @AllArgsConstructor
 public class ReservationService {
 
+    //added
+    private final GuestService guestService;
+
+    //added
+    private final ScheduleService scheduleService;
+
     private final ReservationRepository reservationRepository;
 
     private final ReservationMapper reservationMapper;
 
+
     public ReservationDTO bookReservation(CreateReservationRequestDTO createReservationRequestDTO) {
         throw new UnsupportedOperationException();
+    }
+
+    //added
+    public List<Reservation> findAll() {
+        return reservationRepository.findAll();
     }
 
     public ReservationDTO findReservation(Long reservationId) {
@@ -73,12 +100,11 @@ public class ReservationService {
 
     /*TODO: This method actually not fully working, find a way to fix the issue when it's throwing the error:
             "Cannot reschedule to the same slot.*/
-    public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) {
+    public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) throws Exception {
         Reservation previousReservation = cancel(previousReservationId);
 
-        if (scheduleId.equals(previousReservation.getSchedule().getId())) {
+        if (scheduleService.findSchedule(scheduleId).equals(previousReservation.getSchedule().getId()))
             throw new IllegalArgumentException("Cannot reschedule to the same slot.");
-        }
 
         previousReservation.setReservationStatus(ReservationStatus.RESCHEDULED);
         reservationRepository.save(previousReservation);

@@ -26,6 +26,7 @@ configurations {
 }
 
 dependencies {
+    compile('javax.xml.bind:jaxb-api:2.3.1') //add for Gradle
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-jersey')
     compile('org.springframework.boot:spring-boot-starter-web')

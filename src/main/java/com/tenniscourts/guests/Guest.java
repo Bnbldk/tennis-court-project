@@ -1,6 +1,7 @@
 package com.tenniscourts.guests;
 
 import com.tenniscourts.config.persistence.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -26,7 +27,9 @@ import javax.validation.constraints.NotNull;
 public class Guest extends BaseEntity<Long> {
 
   @Column
-  @NotNull
+  @ApiModelProperty(name = "name", required = true, value = "Bruno")
+  @NotNull(message = "Name cannot be null")
   private String name;
+
 
 }
